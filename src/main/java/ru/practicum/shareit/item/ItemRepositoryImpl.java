@@ -33,7 +33,7 @@ public class ItemRepositoryImpl implements ItemRepository {
     public List<Item> getByOwner(Long ownerId) {
         return items.values()
                 .stream()
-                .filter(item -> Objects.equals(item.getOwnerId(), ownerId))
+                .filter(item -> Objects.equals(item.getOwner().getId(), ownerId))
                 .collect(Collectors.toList());
     }
 

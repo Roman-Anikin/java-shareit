@@ -23,12 +23,13 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item add(Item item) {
-        if (checkOwner(item.getOwnerId())) {
+        if (checkOwner(item.getOwner().getId())) {
             item.setId(id++);
+            item.setOwner(userService.getById(item.getOwner().getId()));
             log.info("Добавлен предмет {}", item);
             return repository.add(item);
         }
-        throw new ObjectNotFoundException("Пользователь с id " + item.getOwnerId() + " не найден");
+        throw new ObjectNotFoundException("Пользователь с id " + item.getOwner().getId() + " не найден");
     }
 
     @Override

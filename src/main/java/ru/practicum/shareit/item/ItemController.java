@@ -2,6 +2,7 @@ package ru.practicum.shareit.item;
 
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.user.User;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -53,11 +54,14 @@ public class ItemController {
     }
 
     private Item convertFromDto(ItemDto itemDto) {
-        return new Item(null,
+        Item item = new Item(null,
                 itemDto.getName(),
                 itemDto.getDescription(),
                 itemDto.getAvailable(),
-                itemDto.getOwnerId());
+                new User(),
+                itemDto.getItemRequest());
+        item.getOwner().setId(itemDto.getOwnerId());
+        return item;
     }
 
     private ItemDto convertToDto(Item item) {
@@ -65,6 +69,7 @@ public class ItemController {
                 item.getName(),
                 item.getDescription(),
                 item.getAvailable(),
-                item.getOwnerId());
+                item.getOwner().getId(),
+                item.getItemRequest());
     }
 }

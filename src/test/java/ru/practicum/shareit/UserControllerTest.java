@@ -31,7 +31,7 @@ public class UserControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private String url = "/users";
+    private final String url = "/users";
 
     @Test
     public void create() throws Exception {
