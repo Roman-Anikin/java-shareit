@@ -39,12 +39,11 @@ public class ItemControllerTest {
         UserDto user = new UserDto(null, "user", "mail@qwerty.com");
         mockMvc.perform(postRequest(user));
 
-        ItemDto item = new ItemDto(null, "name", "desc", true, null, null);
+        ItemDto item = new ItemDto(null, "name", "desc", true, null);
         mockMvc.perform(postRequest(item, 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.name", is("name")));
-
     }
 
     @Test
@@ -52,7 +51,7 @@ public class ItemControllerTest {
         UserDto user = new UserDto(null, "user", "mail@qwerty.com");
         mockMvc.perform(postRequest(user));
 
-        ItemDto item = new ItemDto(null, "name", "desc", true, null, null);
+        ItemDto item = new ItemDto(null, "name", "desc", true, null);
         mockMvc.perform(MockMvcRequestBuilders.post(url)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -62,7 +61,7 @@ public class ItemControllerTest {
 
     @Test
     public void createWithoutOwner() throws Exception {
-        ItemDto item = new ItemDto(null, "name", "desc", true, null, null);
+        ItemDto item = new ItemDto(null, "name", "desc", true, null);
         mockMvc.perform(postRequest(item, 1L))
                 .andExpect(status().isNotFound());
     }
@@ -72,7 +71,7 @@ public class ItemControllerTest {
         UserDto user = new UserDto(null, "user", "mail@qwerty.com");
         mockMvc.perform(postRequest(user));
 
-        ItemDto item = new ItemDto(null, "name", "desc", null, null, null);
+        ItemDto item = new ItemDto(null, "name", "desc", null, null);
         mockMvc.perform(postRequest(item, 1L))
                 .andExpect(status().isBadRequest());
     }
@@ -82,7 +81,7 @@ public class ItemControllerTest {
         UserDto user = new UserDto(null, "user", "mail@qwerty.com");
         mockMvc.perform(postRequest(user));
 
-        ItemDto item = new ItemDto(null, null, "desc", true, null, null);
+        ItemDto item = new ItemDto(null, null, "desc", true, null);
         mockMvc.perform(postRequest(item, 1L))
                 .andExpect(status().isBadRequest());
     }
@@ -92,7 +91,7 @@ public class ItemControllerTest {
         UserDto user = new UserDto(null, "user", "mail@qwerty.com");
         mockMvc.perform(postRequest(user));
 
-        ItemDto item = new ItemDto(null, "name", null, true, null, null);
+        ItemDto item = new ItemDto(null, "name", null, true, null);
         mockMvc.perform(postRequest(item, 1L))
                 .andExpect(status().isBadRequest());
     }
@@ -102,17 +101,16 @@ public class ItemControllerTest {
         UserDto user = new UserDto(null, "user", "mail@qwerty.com");
         mockMvc.perform(postRequest(user));
 
-        ItemDto item = new ItemDto(null, "name", "desc", true, null, null);
+        ItemDto item = new ItemDto(null, "name", "desc", true, null);
         mockMvc.perform(postRequest(item, 1L));
 
-        ItemDto item2 = new ItemDto(null, "update", "update desc", false, null, null);
+        ItemDto item2 = new ItemDto(null, "update", "update desc", false, null);
         mockMvc.perform(patchRequest(item2, 1L, 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.name", is("update")))
                 .andExpect(jsonPath("$.description", is("update desc")))
-                .andExpect(jsonPath("$.available", is(false)))
-                .andExpect(jsonPath("$.ownerId", is(1)));
+                .andExpect(jsonPath("$.available", is(false)));
     }
 
     @Test
@@ -120,10 +118,10 @@ public class ItemControllerTest {
         UserDto user = new UserDto(null, "user", "mail@qwerty.com");
         mockMvc.perform(postRequest(user));
 
-        ItemDto item = new ItemDto(null, "name", "desc", true, null, null);
+        ItemDto item = new ItemDto(null, "name", "desc", true, null);
         mockMvc.perform(postRequest(item, 1L));
 
-        ItemDto item2 = new ItemDto(null, "update", "update desc", false, null, null);
+        ItemDto item2 = new ItemDto(null, "update", "update desc", false, null);
         mockMvc.perform(MockMvcRequestBuilders.patch(url + "/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -136,10 +134,10 @@ public class ItemControllerTest {
         UserDto user = new UserDto(null, "user", "mail@qwerty.com");
         mockMvc.perform(postRequest(user));
 
-        ItemDto item = new ItemDto(null, "name", "desc", true, null, null);
+        ItemDto item = new ItemDto(null, "name", "desc", true, null);
         mockMvc.perform(postRequest(item, 1L));
 
-        ItemDto item2 = new ItemDto(null, "update", "update desc", false, null, null);
+        ItemDto item2 = new ItemDto(null, "update", "update desc", false, null);
         mockMvc.perform(patchRequest(item2, 1L, 2L))
                 .andExpect(status().isNotFound());
     }
@@ -149,17 +147,16 @@ public class ItemControllerTest {
         UserDto user = new UserDto(null, "user", "mail@qwerty.com");
         mockMvc.perform(postRequest(user));
 
-        ItemDto item = new ItemDto(null, "name", "desc", true, null, null);
+        ItemDto item = new ItemDto(null, "name", "desc", true, null);
         mockMvc.perform(postRequest(item, 1L));
 
-        ItemDto item2 = new ItemDto(null, null, null, false, null, null);
+        ItemDto item2 = new ItemDto(null, null, null, false, null);
         mockMvc.perform(patchRequest(item2, 1L, 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.name", is("name")))
                 .andExpect(jsonPath("$.description", is("desc")))
-                .andExpect(jsonPath("$.available", is(false)))
-                .andExpect(jsonPath("$.ownerId", is(1)));
+                .andExpect(jsonPath("$.available", is(false)));
     }
 
     @Test
@@ -167,17 +164,16 @@ public class ItemControllerTest {
         UserDto user = new UserDto(null, "user", "mail@qwerty.com");
         mockMvc.perform(postRequest(user));
 
-        ItemDto item = new ItemDto(null, "name", "desc", true, null, null);
+        ItemDto item = new ItemDto(null, "name", "desc", true, null);
         mockMvc.perform(postRequest(item, 1L));
 
-        ItemDto item2 = new ItemDto(null, "new name", null, true, null, null);
+        ItemDto item2 = new ItemDto(null, "new name", null, true, null);
         mockMvc.perform(patchRequest(item2, 1L, 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.name", is("new name")))
                 .andExpect(jsonPath("$.description", is("desc")))
-                .andExpect(jsonPath("$.available", is(true)))
-                .andExpect(jsonPath("$.ownerId", is(1)));
+                .andExpect(jsonPath("$.available", is(true)));
     }
 
     @Test
@@ -185,17 +181,16 @@ public class ItemControllerTest {
         UserDto user = new UserDto(null, "user", "mail@qwerty.com");
         mockMvc.perform(postRequest(user));
 
-        ItemDto item = new ItemDto(null, "name", "desc", true, null, null);
+        ItemDto item = new ItemDto(null, "name", "desc", true, null);
         mockMvc.perform(postRequest(item, 1L));
 
-        ItemDto item2 = new ItemDto(null, null, "new desc", true, null, null);
+        ItemDto item2 = new ItemDto(null, null, "new desc", true, null);
         mockMvc.perform(patchRequest(item2, 1L, 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.name", is("name")))
                 .andExpect(jsonPath("$.description", is("new desc")))
-                .andExpect(jsonPath("$.available", is(true)))
-                .andExpect(jsonPath("$.ownerId", is(1)));
+                .andExpect(jsonPath("$.available", is(true)));
     }
 
     @Test
@@ -203,7 +198,7 @@ public class ItemControllerTest {
         UserDto user = new UserDto(null, "user", "mail@qwerty.com");
         mockMvc.perform(postRequest(user));
 
-        ItemDto item = new ItemDto(null, "name", "desc", true, null, null);
+        ItemDto item = new ItemDto(null, "name", "desc", true, null);
         mockMvc.perform(postRequest(item, 1L));
 
         mockMvc.perform(MockMvcRequestBuilders.get(url + "/1"))
@@ -211,8 +206,7 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.name", is("name")))
                 .andExpect(jsonPath("$.description", is("desc")))
-                .andExpect(jsonPath("$.available", is(true)))
-                .andExpect(jsonPath("$.ownerId", is(1)));
+                .andExpect(jsonPath("$.available", is(true)));
     }
 
     @Test
@@ -223,10 +217,10 @@ public class ItemControllerTest {
         UserDto user2 = new UserDto(null, "new user", "qwer@qwerty.com");
         mockMvc.perform(postRequest(user2));
 
-        ItemDto item = new ItemDto(null, "name", "desc", true, null, null);
+        ItemDto item = new ItemDto(null, "name", "desc", true, null);
         mockMvc.perform(postRequest(item, 1L));
 
-        ItemDto item2 = new ItemDto(null, "new name", "new desc", false, null, null);
+        ItemDto item2 = new ItemDto(null, "new name", "new desc", false, null);
         mockMvc.perform(postRequest(item2, 1L));
 
         mockMvc.perform(MockMvcRequestBuilders.get(url)
@@ -249,7 +243,7 @@ public class ItemControllerTest {
         UserDto user = new UserDto(null, "user", "mail@qwerty.com");
         mockMvc.perform(postRequest(user));
 
-        ItemDto item = new ItemDto(null, "name", "desc", true, null, null);
+        ItemDto item = new ItemDto(null, "name", "desc", true, null);
         mockMvc.perform(postRequest(item, 1L));
 
         mockMvc.perform(MockMvcRequestBuilders.get(url + "/search?text=aMe"))
@@ -263,7 +257,7 @@ public class ItemControllerTest {
         UserDto user = new UserDto(null, "user", "mail@qwerty.com");
         mockMvc.perform(postRequest(user));
 
-        ItemDto item = new ItemDto(null, "name", "desc", true, null, null);
+        ItemDto item = new ItemDto(null, "name", "desc", true, null);
         mockMvc.perform(postRequest(item, 1L));
 
         mockMvc.perform(MockMvcRequestBuilders.get(url + "/search?text=dEs"))
@@ -277,10 +271,10 @@ public class ItemControllerTest {
         UserDto user = new UserDto(null, "user", "mail@qwerty.com");
         mockMvc.perform(postRequest(user));
 
-        ItemDto item = new ItemDto(null, "name", "desc", false, null, null);
+        ItemDto item = new ItemDto(null, "name", "desc", false, null);
         mockMvc.perform(postRequest(item, 1L));
 
-        ItemDto item2 = new ItemDto(null, "new name", "new desc", true, null, null);
+        ItemDto item2 = new ItemDto(null, "new name", "new desc", true, null);
         mockMvc.perform(postRequest(item2, 1L));
 
         mockMvc.perform(MockMvcRequestBuilders.get(url + "/search?text=dEs"))

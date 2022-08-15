@@ -27,6 +27,5 @@ public class ItemDto {
     @NotNull(message = "Статус доступа не может быть пустым")
     private Boolean available;
 
-    private Long ownerId;
     private ItemRequest itemRequest;
 }
