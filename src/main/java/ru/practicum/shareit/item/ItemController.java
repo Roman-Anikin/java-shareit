@@ -12,38 +12,38 @@ import java.util.stream.Collectors;
 public class ItemController {
 
     private final ItemService itemService;
-    private final ItemConverter itemConverter;
+    private final ItemMapper itemMapper;
 
-    public ItemController(ItemService itemService, ItemConverter itemConverter) {
+    public ItemController(ItemService itemService, ItemMapper itemConverter) {
         this.itemService = itemService;
-        this.itemConverter = itemConverter;
+        this.itemMapper = itemConverter;
     }
 
     @PostMapping
     public ItemDto add(@RequestHeader("X-Sharer-User-Id") Long userId,
                        @Valid @RequestBody ItemDto itemDto) {
-        Item item = itemConverter.convertFromDto(itemDto);
+        Item item = itemMapper.convertFromDto(itemDto);
         item.getOwner().setId(userId);
-        return itemConverter.convertToDto(itemService.add(item));
+        return itemMapper.convertToDto(itemService.add(item));
     }
 
     @PatchMapping("/{itemId}")
     public ItemDto update(@PathVariable Long itemId,
                           @RequestHeader("X-Sharer-User-Id") Long ownerId,
                           @RequestBody ItemDto itemDto) {
-        return itemConverter.convertToDto(itemService.update(itemId, ownerId, itemConverter.convertFromDto(itemDto)));
+        return itemMapper.convertToDto(itemService.update(itemId, ownerId, itemMapper.convertFromDto(itemDto)));
     }
 
     @GetMapping("/{itemId}")
     public ItemDto getById(@PathVariable Long itemId) {
-        return itemConverter.convertToDto(itemService.getById(itemId));
+        return itemMapper.convertToDto(itemService.getById(itemId));
     }
 
     @GetMapping
     public List<ItemDto> getByOwner(@RequestHeader("X-Sharer-User-Id") Long ownerId) {
         return itemService.getByOwner(ownerId)
                 .stream()
-                .map(itemConverter::convertToDto)
+                .map(itemMapper::convertToDto)
                 .collect(Collectors.toList());
     }
 
@@ -51,7 +51,7 @@ public class ItemController {
     public List<ItemDto> searchByText(@RequestParam(required = false) String text) {
         return itemService.searchByText(text)
                 .stream()
-                .map(itemConverter::convertToDto)
+                .map(itemMapper::convertToDto)
                 .collect(Collectors.toList());
     }
 }

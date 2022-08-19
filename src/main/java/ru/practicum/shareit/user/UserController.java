@@ -12,21 +12,21 @@ import java.util.stream.Collectors;
 public class UserController {
 
     private final UserService userService;
-    private final UserConverter userConverter;
+    private final UserMapper userMapper;
 
-    public UserController(UserService userService, UserConverter userConverter) {
+    public UserController(UserService userService, UserMapper userConverter) {
         this.userService = userService;
-        this.userConverter = userConverter;
+        this.userMapper = userConverter;
     }
 
     @PostMapping
     public UserDto add(@Valid @RequestBody UserDto userDto) {
-        return userConverter.convertToDto(userService.add(userConverter.convertFromDto(userDto)));
+        return userMapper.convertToDto(userService.add(userMapper.convertFromDto(userDto)));
     }
 
     @PatchMapping("/{userId}")
     public UserDto update(@Valid @RequestBody UserDto userDto, @PathVariable Long userId) {
-        return userConverter.convertToDto(userService.update(userId, userConverter.convertFromDto(userDto)));
+        return userMapper.convertToDto(userService.update(userId, userMapper.convertFromDto(userDto)));
     }
 
     @DeleteMapping("/{userId}")
@@ -36,14 +36,14 @@ public class UserController {
 
     @GetMapping("/{userId}")
     public UserDto getById(@PathVariable Long userId) {
-        return userConverter.convertToDto(userService.getById(userId));
+        return userMapper.convertToDto(userService.getById(userId));
     }
 
     @GetMapping
     public List<UserDto> getAll() {
         List<User> users = userService.getAll();
         return users.stream()
-                .map(userConverter::convertToDto)
+                .map(userMapper::convertToDto)
                 .collect(Collectors.toList());
     }
 }
