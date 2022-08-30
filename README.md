@@ -1,2 +1,2 @@
 # java-shareit
-Template repository for Shareit project.
+![ER-модель](src\main\resources\shareIt.png)

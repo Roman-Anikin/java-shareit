@@ -16,5 +16,4 @@ public class UserDto {
 
     @Email(message = "Неверный формат электронной почты")
     private String email;
-
 }
