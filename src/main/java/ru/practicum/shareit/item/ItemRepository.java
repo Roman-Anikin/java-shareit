@@ -1,11 +1,13 @@
 package ru.practicum.shareit.item;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-public interface ItemRepository extends CrudRepository<Item, Long> {
+@Repository
+public interface ItemRepository extends JpaRepository<Item, Long> {
 
     List<Item> getByOwnerIdOrderByIdAsc(Long ownerId);
 

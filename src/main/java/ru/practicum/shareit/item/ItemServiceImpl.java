@@ -88,8 +88,8 @@ public class ItemServiceImpl implements ItemService {
             OwnerItemDto itemDto = ownerItemMapper.convertToDto(item.get());
             itemDto.setComments(commentService.getAllByItemId(itemId));
             if (item.get().getOwner().getId().equals(userId)) {
-                itemDto.setLastBooking(bookingService.getLastBooking(userId, itemId));
-                itemDto.setNextBooking(bookingService.getNextBooking(userId, itemId));
+                itemDto.setLastBooking(bookingService.getLastBooking(itemId));
+                itemDto.setNextBooking(bookingService.getNextBooking(itemId));
             }
             log.info("Получен предмет {}", itemDto);
             return itemDto;
@@ -101,8 +101,8 @@ public class ItemServiceImpl implements ItemService {
     public List<OwnerItemDto> getByOwner(Long ownerId) {
         List<OwnerItemDto> items = ownerItemMapper.convertToDto(repository.getByOwnerIdOrderByIdAsc(ownerId));
         for (OwnerItemDto item : items) {
-            item.setLastBooking(bookingService.getLastBooking(ownerId, item.getId()));
-            item.setNextBooking(bookingService.getNextBooking(ownerId, item.getId()));
+            item.setLastBooking(bookingService.getLastBooking(item.getId()));
+            item.setNextBooking(bookingService.getNextBooking(item.getId()));
         }
         log.info("Получен список предметов {} пользователя {}", items, userService.getById(ownerId));
         return items;

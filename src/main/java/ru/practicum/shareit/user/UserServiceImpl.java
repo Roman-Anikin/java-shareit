@@ -58,8 +58,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> getAll() {
-        List<User> users = new ArrayList<>();
-        repository.findAll().forEach(users::add);
+        List<User> users = new ArrayList<>(repository.findAll());
         log.info("Получен список пользователей {}", users);
         return users.stream()
                 .map(userMapper::convertToDto)

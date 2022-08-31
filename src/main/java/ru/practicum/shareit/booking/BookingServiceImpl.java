@@ -126,27 +126,27 @@ public class BookingServiceImpl implements BookingService {
         if (itemService.getByOwner(ownerId).size() > 0 && userService.getById(ownerId) != null && checkEnum(state)) {
             switch (BookingState.valueOf(state)) {
                 case ALL:
-                    bookings = bookingMapper.convertToDto(repository.getByOwnerAndAllState(ownerId));
+                    bookings = bookingMapper.convertToDto(repository.findByItemOwnerId(ownerId, orderByDesc()));
                     break;
                 case CURRENT:
-                    bookings = bookingMapper.convertToDto(repository.getByOwnerAndCurrentState(ownerId,
-                            LocalDateTime.now()));
+                    bookings = bookingMapper.convertToDto(repository.findByItemOwnerIdAndStartIsBeforeAndEndIsAfter(
+                            ownerId, LocalDateTime.now(), LocalDateTime.now(), orderByDesc()));
                     break;
                 case PAST:
-                    bookings = bookingMapper.convertToDto(repository.getByOwnerAndPastState(ownerId,
-                            LocalDateTime.now()));
+                    bookings = bookingMapper.convertToDto(repository.findByItemOwnerIdAndEndIsBefore(
+                            ownerId, LocalDateTime.now(), orderByDesc()));
                     break;
                 case FUTURE:
-                    bookings = bookingMapper.convertToDto(repository.getByOwnerAndFutureState(ownerId,
-                            LocalDateTime.now()));
+                    bookings = bookingMapper.convertToDto(repository.findByItemOwnerIdAndStartIsAfter(
+                            ownerId, LocalDateTime.now(), orderByDesc()));
                     break;
                 case WAITING:
-                    bookings = bookingMapper.convertToDto(repository.getByOwnerAndWaitingOrRejectedState(ownerId,
-                            BookingStatus.WAITING));
+                    bookings = bookingMapper.convertToDto(repository.findByItemOwnerIdAndStatusIs(
+                            ownerId, BookingStatus.WAITING, orderByDesc()));
                     break;
                 case REJECTED:
-                    bookings = bookingMapper.convertToDto(repository.getByOwnerAndWaitingOrRejectedState(ownerId,
-                            BookingStatus.REJECTED));
+                    bookings = bookingMapper.convertToDto(repository.findByItemOwnerIdAndStatusIs(
+                            ownerId, BookingStatus.REJECTED, orderByDesc()));
             }
         }
         log.info("Получен список бронирований {} для владельца {}", bookings, userService.getById(ownerId));
@@ -154,14 +154,15 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingDto getLastBooking(Long ownerId, Long itemId) {
-        Booking booking = repository.getLastBooking(ownerId, itemId, LocalDateTime.now());
+    public BookingDto getLastBooking(Long itemId) {
+        Booking booking = repository.findFirstByItemIdAndEndIsBefore(itemId, LocalDateTime.now(), orderByDesc());
         return booking == null ? null : bookingMapper.convertToDto(booking);
     }
 
     @Override
-    public BookingDto getNextBooking(Long ownerId, Long itemId) {
-        Booking booking = repository.getNextBooking(ownerId, itemId, LocalDateTime.now());
+    public BookingDto getNextBooking(Long itemId) {
+        Booking booking = repository.findFirstByItemIdAndStartIsAfter(itemId, LocalDateTime.now(),
+                Sort.by(Sort.Direction.ASC, "start"));
         return booking == null ? null : bookingMapper.convertToDto(booking);
     }
 
