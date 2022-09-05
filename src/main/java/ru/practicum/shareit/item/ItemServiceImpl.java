@@ -1,12 +1,19 @@
 package ru.practicum.shareit.item;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.BookingService;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.OwnerItemDto;
+import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -14,42 +21,60 @@ public class ItemServiceImpl implements ItemService {
 
     private final ItemRepository repository;
     private final UserService userService;
-    private Long id = 1L;
+    private final BookingService bookingService;
+    private final CommentService commentService;
+    private final ItemMapper itemMapper;
+    private final UserMapper userMapper;
+    private final OwnerItemMapper ownerItemMapper;
 
-    public ItemServiceImpl(ItemRepository repository, UserService userService) {
+    public ItemServiceImpl(ItemRepository repository,
+                           UserService userService,
+                           @Lazy BookingService bookingService,
+                           @Lazy CommentService commentService,
+                           ItemMapper itemMapper,
+                           UserMapper userMapper,
+                           OwnerItemMapper ownerItemMapper) {
         this.repository = repository;
         this.userService = userService;
+        this.bookingService = bookingService;
+        this.commentService = commentService;
+        this.itemMapper = itemMapper;
+        this.userMapper = userMapper;
+        this.ownerItemMapper = ownerItemMapper;
     }
 
     @Override
-    public Item add(Item item) {
-        if (checkOwner(item.getOwner().getId())) {
-            item.setId(id++);
-            item.setOwner(userService.getById(item.getOwner().getId()));
+    public ItemDto add(Long userId, ItemDto itemDto) {
+        Item item = itemMapper.convertFromDto(itemDto);
+        item.getOwner().setId(userId);
+        if (userService.getById(userId) != null) {
+            item.setOwner(userMapper.convertFromDto(userService.getById(userId)));
             log.info("Добавлен предмет {}", item);
-            return repository.add(item);
+            return itemMapper.convertToDto(repository.save(item));
         }
-        throw new ObjectNotFoundException("Пользователь с id " + item.getOwner().getId() + " не найден");
+        throw new ObjectNotFoundException("Пользователь с id " + userId + " не найден");
     }
 
     @Override
-    public Item update(Long itemId, Long ownerId, Item item) {
-        if (checkOwner(ownerId)) {
-            if (getByOwner(ownerId)
+    public ItemDto update(Long itemId, Long ownerId, ItemDto itemDto) {
+        if (userService.getById(ownerId) != null) {
+            if (repository.getByOwnerIdOrderByIdAsc(ownerId)
                     .stream()
                     .anyMatch(item1 -> item1.getId().equals(itemId))) {
-                Item newItem = getById(itemId);
-                if (item.getName() != null) {
-                    newItem.setName(item.getName());
+                Item newItem = getItemById(itemId);
+                newItem.setId(itemId);
+                newItem.setOwner(userMapper.convertFromDto(userService.getById(ownerId)));
+                if (itemDto.getName() != null) {
+                    newItem.setName(itemDto.getName());
                 }
-                if (item.getDescription() != null) {
-                    newItem.setDescription(item.getDescription());
+                if (itemDto.getDescription() != null) {
+                    newItem.setDescription(itemDto.getDescription());
                 }
-                if (item.getAvailable() != null) {
-                    newItem.setAvailable(item.getAvailable());
+                if (itemDto.getAvailable() != null) {
+                    newItem.setAvailable(itemDto.getAvailable());
                 }
                 log.info("Обновлен предмет {}", newItem);
-                return repository.update(newItem);
+                return itemMapper.convertToDto(repository.save(newItem));
             }
             throw new ObjectNotFoundException("Предмет с id " + itemId + " не найден");
         }
@@ -57,33 +82,55 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Item getById(Long itemId) {
-        Item item = repository.getById(itemId);
-        log.info("Получен предмет {}", item);
-        return item;
+    public OwnerItemDto getById(Long userId, Long itemId) {
+        Optional<Item> item = repository.findById(itemId);
+        if (item.isPresent()) {
+            OwnerItemDto itemDto = ownerItemMapper.convertToDto(item.get());
+            itemDto.setComments(commentService.getAllByItemId(itemId));
+            if (item.get().getOwner().getId().equals(userId)) {
+                itemDto.setLastBooking(bookingService.getLastBooking(itemId));
+                itemDto.setNextBooking(bookingService.getNextBooking(itemId));
+            }
+            log.info("Получен предмет {}", itemDto);
+            return itemDto;
+        }
+        throw new ObjectNotFoundException("Предмет с id " + itemId + " не найден");
     }
 
     @Override
-    public List<Item> getByOwner(Long ownerId) {
-        List<Item> items = repository.getByOwner(ownerId);
+    public List<OwnerItemDto> getByOwner(Long ownerId) {
+        List<OwnerItemDto> items = ownerItemMapper.convertToDto(repository.getByOwnerIdOrderByIdAsc(ownerId));
+        for (OwnerItemDto item : items) {
+            item.setLastBooking(bookingService.getLastBooking(item.getId()));
+            item.setNextBooking(bookingService.getNextBooking(item.getId()));
+        }
         log.info("Получен список предметов {} пользователя {}", items, userService.getById(ownerId));
         return items;
     }
 
     @Override
-    public List<Item> searchByText(String text) {
+    public List<ItemDto> searchByText(String text) {
         text = text.toLowerCase().trim();
         List<Item> items = new ArrayList<>();
         if (!text.isEmpty()) {
             items = repository.searchByText(text);
         }
         log.info("Получен список предметов {} по поиску {}", items, text);
-        return items;
+        return itemMapper.convertToDto(items);
     }
 
-    private boolean checkOwner(Long id) {
-        return userService.getAll()
-                .stream()
-                .anyMatch(user -> user.getId().equals(id));
+    @Override
+    public CommentDto addComment(Long itemId, Long userId, CommentDto commentDto) {
+        return commentService.add(itemId, userId, commentDto);
+    }
+
+    @Override
+    public Item getItemById(Long itemId) {
+        Optional<Item> item = repository.findById(itemId);
+        if (item.isPresent()) {
+            item.get().setOwner(userMapper.convertFromDto(userService.getById(item.get().getOwner().getId())));
+            return item.get();
+        }
+        throw new ObjectNotFoundException("Предмет с id " + itemId + " не найден");
     }
 }

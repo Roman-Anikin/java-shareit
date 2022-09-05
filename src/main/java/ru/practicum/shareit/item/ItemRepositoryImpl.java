@@ -1,35 +1,28 @@
 package ru.practicum.shareit.item;
 
-import org.springframework.stereotype.Repository;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-@Repository
-public class ItemRepositoryImpl implements ItemRepository {
+public class ItemRepositoryImpl {
 
     private final HashMap<Long, Item> items = new HashMap<>();
 
-    @Override
     public Item add(Item item) {
         items.put(item.getId(), item);
         return item;
     }
 
-    @Override
     public Item update(Item item) {
         items.put(item.getId(), item);
         return item;
     }
 
-    @Override
     public Item getById(Long itemId) {
         return items.get(itemId);
     }
 
-    @Override
     public List<Item> getByOwner(Long ownerId) {
         return items.values()
                 .stream()
@@ -37,7 +30,6 @@ public class ItemRepositoryImpl implements ItemRepository {
                 .collect(Collectors.toList());
     }
 
-    @Override
     public List<Item> searchByText(String text) {
         return items.values()
                 .stream()
