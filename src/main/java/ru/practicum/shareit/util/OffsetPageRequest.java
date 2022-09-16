@@ -2,6 +2,7 @@ package ru.practicum.shareit.util;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.lang.NonNull;
 import ru.practicum.shareit.exception.ValidationException;
 
 public class OffsetPageRequest implements Pageable {
@@ -41,28 +42,33 @@ public class OffsetPageRequest implements Pageable {
     }
 
     @Override
+    @NonNull
     public Sort getSort() {
         return this.sort;
     }
 
     @Override
+    @NonNull
     public Pageable next() {
-        return null;
+        return new OffsetPageRequest(this.getPageNumber() + 1, this.getPageSize(), this.getSort());
     }
 
     @Override
+    @NonNull
     public Pageable previousOrFirst() {
         return this;
     }
 
     @Override
+    @NonNull
     public Pageable first() {
         return this;
     }
 
     @Override
+    @NonNull
     public Pageable withPage(int pageNumber) {
-        return null;
+        return new OffsetPageRequest(pageNumber, this.getPageSize(), this.getSort());
     }
 
     @Override
