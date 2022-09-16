@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,48 +17,48 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "LEFT JOIN bookings b ON i.item_id = b.item_id " +
             "WHERE i.owner_id = ?1 ";
 
-    List<Booking> findByBookerId(Long bookerId, Sort sort);
+    List<Booking> findByBookerId(Long bookerId, Pageable pageable);
 
-    List<Booking> findByBookerIdAndStartIsBeforeAndEndIsAfter(Long bookerId,
-                                                              LocalDateTime before,
-                                                              LocalDateTime after,
-                                                              Sort sort);
+    List<Booking> findByBookerIdAndStartBeforeAndEndAfter(Long bookerId,
+                                                          LocalDateTime before,
+                                                          LocalDateTime after,
+                                                          Pageable pageable);
 
-    List<Booking> findByBookerIdAndEndIsBefore(Long bookerId, LocalDateTime time, Sort sort);
+    List<Booking> findByBookerIdAndEndBefore(Long bookerId, LocalDateTime time, Pageable pageable);
 
-    List<Booking> findByBookerIdAndStartIsAfter(Long bookerId, LocalDateTime time, Sort sort);
+    List<Booking> findByBookerIdAndStartAfter(Long bookerId, LocalDateTime time, Pageable pageable);
 
-    List<Booking> findByBookerIdAndStatusIs(Long bookerId, BookingStatus status, Sort sort);
+    List<Booking> findByBookerIdAndStatus(Long bookerId, BookingStatus status, Pageable pageable);
 
     @Query(name = "SELECT *" +
             "FROM bookings b " +
             "WHERE b.item_id = ?1 AND b.booker_id = ?2 AND b.end_date < ?3 " +
             "AND (b.status LIKE 'APPROVED' OR b.status LIKE 'WAITING') " +
             "LIMIT 1", nativeQuery = true)
-    Booking findByItemIdAndBookerIdAndEndIsBefore(Long itemId, Long userId, LocalDateTime time);
+    Booking findByItemIdAndBookerIdAndEndBefore(Long itemId, Long userId, LocalDateTime time);
 
     @Query(name = request + " AND (b.status LIKE 'WAITING' OR b.status LIKE 'APPROVED') ",
             nativeQuery = true)
-    List<Booking> findByItemOwnerId(Long ownerId, Sort sort);
+    List<Booking> findByItemOwnerId(Long ownerId, Pageable pageable);
 
-    List<Booking> findByItemOwnerIdAndStartIsBeforeAndEndIsAfter(Long ownerId,
-                                                                 LocalDateTime before,
-                                                                 LocalDateTime after,
-                                                                 Sort sort);
+    List<Booking> findByItemOwnerIdAndStartBeforeAndEndAfter(Long ownerId,
+                                                             LocalDateTime before,
+                                                             LocalDateTime after,
+                                                             Pageable pageable);
 
     @Query(name = request + "AND (b.status LIKE 'WAITING' OR b.status LIKE 'APPROVED') " +
             "AND b.end_date < ?2 ",
             nativeQuery = true)
-    List<Booking> findByItemOwnerIdAndEndIsBefore(Long ownerId, LocalDateTime time, Sort sort);
+    List<Booking> findByItemOwnerIdAndEndBefore(Long ownerId, LocalDateTime time, Pageable pageable);
 
     @Query(name = request + "AND (b.status LIKE 'WAITING' OR b.status LIKE 'APPROVED') " +
             "AND b.start_date > ?2 ",
             nativeQuery = true)
-    List<Booking> findByItemOwnerIdAndStartIsAfter(Long ownerId, LocalDateTime time, Sort sort);
+    List<Booking> findByItemOwnerIdAndStartAfter(Long ownerId, LocalDateTime time, Pageable pageable);
 
-    List<Booking> findByItemOwnerIdAndStatusIs(Long ownerId, BookingStatus status, Sort sort);
+    List<Booking> findByItemOwnerIdAndStatus(Long ownerId, BookingStatus status, Pageable pageable);
 
-    Booking findFirstByItemIdAndEndIsBefore(Long itemId, LocalDateTime time, Sort sort);
+    Booking findFirstByItemIdAndEndBefore(Long itemId, LocalDateTime time, Sort sort);
 
-    Booking findFirstByItemIdAndStartIsAfter(Long itemId, LocalDateTime time, Sort sort);
+    Booking findFirstByItemIdAndStartAfter(Long itemId, LocalDateTime time, Sort sort);
 }

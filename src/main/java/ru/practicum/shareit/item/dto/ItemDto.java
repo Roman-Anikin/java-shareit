@@ -1,7 +1,6 @@
 package ru.practicum.shareit.item.dto;
 
 import lombok.*;
-import ru.practicum.shareit.requests.ItemRequest;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -16,8 +15,8 @@ public class ItemDto {
 
     private Long id;
 
-    @NotBlank(message = "Имя не может быть пустым")
-    @NotEmpty(message = "Имя не может быть пустым")
+    @NotBlank(message = "Название не может быть пустым")
+    @NotEmpty(message = "Название не может быть пустым")
     private String name;
 
     @NotBlank(message = "Описание не может быть пустым")
@@ -27,5 +26,5 @@ public class ItemDto {
     @NotNull(message = "Статус доступа не может быть пустым")
     private Boolean available;
 
-    private ItemRequest itemRequest;
+    private Long requestId;
 }
