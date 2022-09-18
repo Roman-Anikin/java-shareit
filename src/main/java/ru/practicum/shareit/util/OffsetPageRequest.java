@@ -3,7 +3,6 @@ package ru.practicum.shareit.util;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
-import ru.practicum.shareit.exception.ValidationException;
 
 public class OffsetPageRequest implements Pageable {
 
@@ -12,15 +11,6 @@ public class OffsetPageRequest implements Pageable {
     private final Sort sort;
 
     public OffsetPageRequest(Integer from, Integer size, Sort sort) {
-        if (size == null) {
-            size = Integer.MAX_VALUE;
-        }
-        if (from < 0) {
-            throw new ValidationException("Индекс первого элемента не может быть отрицательным");
-        }
-        if (size < 1) {
-            throw new ValidationException("Количество элементов на странице не может быть меньше одного");
-        }
         this.size = size;
         this.from = from;
         this.sort = sort;

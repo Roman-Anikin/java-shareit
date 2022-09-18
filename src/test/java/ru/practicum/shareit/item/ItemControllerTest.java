@@ -31,13 +31,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(ItemController.class)
 public class ItemControllerTest {
 
-    private final String url = "/items";
     @Autowired
     private MockMvc mockMvc;
+
     @MockBean
     private ItemService itemService;
+
     @Autowired
     private ObjectMapper objectMapper;
+
+    private final String url = "/items";
 
     @Test
     public void addItem() throws Exception {
@@ -242,6 +245,36 @@ public class ItemControllerTest {
     }
 
     @Test
+    public void getItemsByOwnerWithFromLessZero() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(url)
+                        .header("X-Sharer-User-Id", 1L)
+                        .param("state", "ALL")
+                        .param("from", "-1")
+                        .param("size", "10"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void getItemsByOwnerWithSizeZero() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(url)
+                        .header("X-Sharer-User-Id", 1L)
+                        .param("state", "ALL")
+                        .param("from", "0")
+                        .param("size", "0"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void getItemsByOwnerWithSizeLessZero() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(url)
+                        .header("X-Sharer-User-Id", 1L)
+                        .param("state", "ALL")
+                        .param("from", "0")
+                        .param("size", "-1"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     public void getItemsBySearch() throws Exception {
         ItemDto itemDto = new ItemDto(1L, "item", "desc", true, null);
         ItemDto itemDto2 = new ItemDto(2L, "new item", "new desc", false, null);
@@ -276,6 +309,36 @@ public class ItemControllerTest {
     public void getItemsBySearchWithoutHeader() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get(url + "/search")
                         .param("text", "item"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void getItemsBySearchWithFromLessZero() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(url + "/search")
+                        .header("X-Sharer-User-Id", 1L)
+                        .param("state", "ALL")
+                        .param("from", "-1")
+                        .param("size", "10"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void getItemsBySearchWithSizeZero() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(url + "/search")
+                        .header("X-Sharer-User-Id", 1L)
+                        .param("state", "ALL")
+                        .param("from", "0")
+                        .param("size", "0"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void getItemsBySearchWithSizeLessZero() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(url + "/search")
+                        .header("X-Sharer-User-Id", 1L)
+                        .param("state", "ALL")
+                        .param("from", "0")
+                        .param("size", "-1"))
                 .andExpect(status().isBadRequest());
     }
 

@@ -29,13 +29,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(UserController.class)
 public class UserControllerTest {
 
-    private final String url = "/users";
     @Autowired
     private MockMvc mockMvc;
+
     @MockBean
     private UserService userService;
+
     @Autowired
     private ObjectMapper objectMapper;
+
+    private final String url = "/users";
 
     @Test
     public void addUser() throws Exception {

@@ -24,13 +24,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(ItemRequestController.class)
 public class ItemRequestControllerTest {
 
-    private final String url = "/requests";
     @Autowired
     private MockMvc mockMvc;
+
     @MockBean
     private ItemRequestService service;
+
     @Autowired
     private ObjectMapper objectMapper;
+
+    private final String url = "/requests";
 
     @Test
     public void addRequest() throws Exception {
@@ -96,7 +99,7 @@ public class ItemRequestControllerTest {
     }
 
     @Test
-    public void getAllExceptRequester() throws Exception {
+    public void getAllExceptRequesterWithoutPagination() throws Exception {
         when(service.getAllExceptRequester(any(), any(), any()))
                 .thenReturn(List.of(new ItemRequestDto(), new ItemRequestDto()));
 
@@ -109,6 +112,36 @@ public class ItemRequestControllerTest {
     @Test
     public void getAllExceptRequesterWithoutHeader() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get(url + "/all"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void getAllExceptRequesterWithFromLessZero() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(url + "/all")
+                        .header("X-Sharer-User-Id", 1L)
+                        .param("state", "ALL")
+                        .param("from", "-1")
+                        .param("size", "10"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void getAllExceptRequesterWithSizeZero() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(url + "/all")
+                        .header("X-Sharer-User-Id", 1L)
+                        .param("state", "ALL")
+                        .param("from", "0")
+                        .param("size", "0"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void getAllExceptRequesterWithSizeLessZero() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(url + "/all")
+                        .header("X-Sharer-User-Id", 1L)
+                        .param("state", "ALL")
+                        .param("from", "0")
+                        .param("size", "-1"))
                 .andExpect(status().isBadRequest());
     }
 

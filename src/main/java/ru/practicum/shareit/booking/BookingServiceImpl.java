@@ -121,7 +121,7 @@ public class BookingServiceImpl implements BookingService {
         checkUser(ownerId);
         checkState(state);
         List<BookingDto> bookings = new ArrayList<>();
-        if (itemService.getByOwner(ownerId, 0, null).size() > 0) {
+        if (itemService.getByOwner(ownerId, 0, size).size() > 0) {
             switch (BookingState.valueOf(state)) {
                 case ALL:
                     bookings = bookingMapper.convertToDto(repository.findByItemOwnerId(ownerId,

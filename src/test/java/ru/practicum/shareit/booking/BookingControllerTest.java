@@ -26,13 +26,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(BookingController.class)
 public class BookingControllerTest {
 
-    private final String url = "/bookings";
     @Autowired
     private MockMvc mockMvc;
+
     @MockBean
     private BookingService service;
+
     @Autowired
     private ObjectMapper objectMapper;
+
+    private final String url = "/bookings";
 
     @Test
     public void addBooking() throws Exception {
@@ -180,7 +183,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void getByUserAndStateWithoutState() throws Exception {
+    public void getByUserAndStateWithoutStateAndPagination() throws Exception {
         BookingDto bookingDto = new BookingDto(1L, getLTD("+", 2), getLTD("+", 3),
                 null, 1L, null, 1L, BookingStatus.WAITING);
         when(service.getByUserAndState(any(), any(), any(), any())).thenReturn(List.of(bookingDto));
@@ -195,6 +198,36 @@ public class BookingControllerTest {
                 .andExpect(jsonPath("$[0].itemId", is(bookingDto.getItemId()), Long.class))
                 .andExpect(jsonPath("$[0].bookerId", is(bookingDto.getBookerId()), Long.class))
                 .andExpect(jsonPath("$[0].status", is(bookingDto.getStatus().toString())));
+    }
+
+    @Test
+    public void getByUserAndStateWithFromLessZero() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(url)
+                        .header("X-Sharer-User-Id", 1L)
+                        .param("state", "ALL")
+                        .param("from", "-1")
+                        .param("size", "10"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void getByUserAndStateWithSizeZero() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(url)
+                        .header("X-Sharer-User-Id", 1L)
+                        .param("state", "ALL")
+                        .param("from", "0")
+                        .param("size", "0"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void getByUserAndStateWithSizeLessZero() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(url)
+                        .header("X-Sharer-User-Id", 1L)
+                        .param("state", "ALL")
+                        .param("from", "0")
+                        .param("size", "-1"))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -226,7 +259,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void getByOwnerAndStateWithoutState() throws Exception {
+    public void getByOwnerAndStateWithoutStateAndPagination() throws Exception {
         BookingDto bookingDto = new BookingDto(1L, getLTD("+", 2), getLTD("+", 3),
                 null, 1L, null, 1L, BookingStatus.WAITING);
         when(service.getByOwnerAndState(any(), any(), any(), any())).thenReturn(List.of(bookingDto));
@@ -241,6 +274,36 @@ public class BookingControllerTest {
                 .andExpect(jsonPath("$[0].itemId", is(bookingDto.getItemId()), Long.class))
                 .andExpect(jsonPath("$[0].bookerId", is(bookingDto.getBookerId()), Long.class))
                 .andExpect(jsonPath("$[0].status", is(bookingDto.getStatus().toString())));
+    }
+
+    @Test
+    public void getByOwnerAndStateWithFromLessZero() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(url + "/owner")
+                        .header("X-Sharer-User-Id", 1L)
+                        .param("state", "ALL")
+                        .param("from", "-1")
+                        .param("size", "10"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void getByOwnerAndStateWithSizeZero() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(url + "/owner")
+                        .header("X-Sharer-User-Id", 1L)
+                        .param("state", "ALL")
+                        .param("from", "0")
+                        .param("size", "0"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void getByOwnerAndStateWithSizeLessZero() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(url + "/owner")
+                        .header("X-Sharer-User-Id", 1L)
+                        .param("state", "ALL")
+                        .param("from", "0")
+                        .param("size", "-1"))
+                .andExpect(status().isBadRequest());
     }
 
     private MockHttpServletRequestBuilder postRequest(BookingDto booking,

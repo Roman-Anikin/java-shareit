@@ -1,13 +1,17 @@
 package ru.practicum.shareit.requests;
 
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.requests.dto.ItemRequestDto;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
 @RequestMapping(path = "/requests")
+@Validated
 public class ItemRequestController {
 
     private final ItemRequestService service;
@@ -29,8 +33,10 @@ public class ItemRequestController {
 
     @GetMapping("/all")
     public List<ItemRequestDto> getAllExceptRequester(@RequestHeader("X-Sharer-User-Id") Long requesterId,
-                                                      @RequestParam(value = "from", defaultValue = "0") Integer from,
-                                                      @RequestParam(value = "size", required = false) Integer size) {
+                                                      @RequestParam(value = "from", defaultValue = "0")
+                                                      @PositiveOrZero Integer from,
+                                                      @RequestParam(value = "size", defaultValue = "200")
+                                                      @Positive Integer size) {
         return service.getAllExceptRequester(requesterId, from, size);
     }
 

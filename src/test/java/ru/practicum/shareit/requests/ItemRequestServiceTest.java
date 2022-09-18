@@ -6,7 +6,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
-import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.requests.dto.ItemRequestDto;
@@ -115,24 +114,6 @@ public class ItemRequestServiceTest {
         assertThatThrownBy(() ->
                 requestService.getAllExceptRequester(1L, 0, 10))
                 .isInstanceOf(ObjectNotFoundException.class);
-    }
-
-    @Test
-    public void getAllExceptRequesterWithFromLessZero() {
-        when(userService.getById(anyLong())).thenReturn(new UserDto());
-
-        assertThatThrownBy(() ->
-                requestService.getAllExceptRequester(1L, -1, 10))
-                .isInstanceOf(ValidationException.class);
-    }
-
-    @Test
-    public void getAllExceptRequesterWithSizeIsZero() {
-        when(userService.getById(anyLong())).thenReturn(new UserDto());
-
-        assertThatThrownBy(() ->
-                requestService.getAllExceptRequester(1L, 0, 0))
-                .isInstanceOf(ValidationException.class);
     }
 
     @Test
