@@ -18,7 +18,7 @@ public class OwnerItemMapper {
                 null,
                 null,
                 new ArrayList<>(),
-                item.getItemRequest());
+                item.getRequest());
     }
 
     public List<OwnerItemDto> convertToDto(List<Item> items) {

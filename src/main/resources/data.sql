@@ -9,3 +9,6 @@ ALTER TABLE bookings ALTER COLUMN booking_id RESTART WITH 1;
 
 DELETE FROM comments;
 ALTER TABLE comments ALTER COLUMN comment_id RESTART WITH 1;
+
+DELETE FROM requests;
+ALTER TABLE requests ALTER COLUMN request_id RESTART WITH 1;

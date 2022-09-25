@@ -25,17 +25,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto add(UserDto userDto) {
-        User user = userMapper.convertFromDto(userDto);
-        if (user.getEmail() == null || user.getEmail().isEmpty() || user.getEmail().isBlank()) {
+        if (userDto.getEmail() == null || userDto.getEmail().isEmpty() || userDto.getEmail().isBlank()) {
             throw new ValidationException("Почта не может быть пустой");
         }
+        User user = userMapper.convertFromDto(userDto);
         log.info("Добавлен пользователь {}", user);
         return userMapper.convertToDto(repository.save(user));
     }
 
     @Override
     public UserDto update(Long userId, UserDto userDto) {
-        User newUser = userMapper.convertFromDto(getById(userId));
+        User newUser = checkUser(userId);
         if (userDto.getName() != null) {
             newUser.setName(userDto.getName());
         }
@@ -48,12 +48,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getById(Long userId) {
-        Optional<User> user = repository.findById(userId);
-        if (user.isPresent()) {
-            log.info("Получен пользователь {}", user.get());
-            return userMapper.convertToDto(user.get());
-        }
-        throw new ObjectNotFoundException("Пользователь с id " + userId + " не найден");
+        User user = checkUser(userId);
+        log.info("Получен пользователь {}", user);
+        return userMapper.convertToDto(user);
     }
 
     @Override
@@ -67,9 +64,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(Long userId) {
-        if (getById(userId) != null) {
-            log.info("Удален пользователь {}", getById(userId));
-            repository.deleteById(userId);
+        checkUser(userId);
+        log.info("Удален пользователь {}", getById(userId));
+        repository.deleteById(userId);
+    }
+
+    private User checkUser(Long userId) {
+        Optional<User> user = repository.findById(userId);
+        if (user.isEmpty()) {
+            throw new ObjectNotFoundException("Пользователь с id " + userId + " не найден");
         }
+        return user.get();
     }
 }
