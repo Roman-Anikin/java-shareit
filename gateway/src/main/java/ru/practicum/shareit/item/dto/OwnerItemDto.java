@@ -21,4 +21,5 @@ public class OwnerItemDto {
     private BookingDto nextBooking;
     private List<CommentDto> comments;
     private ItemRequest itemRequest;
+
 }

@@ -6,8 +6,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import javax.validation.ConstraintViolationException;
-
 @Slf4j
 @RestControllerAdvice("ru.practicum.shareit")
 public class ErrorHandler {
@@ -29,13 +27,6 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(final ValidationException e) {
-        log.info("Exception: {}", e.toString());
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleConstraintViolationException(final ConstraintViolationException e) {
         log.info("Exception: {}", e.toString());
         return new ErrorResponse(e.getMessage());
     }
