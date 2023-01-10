@@ -99,7 +99,7 @@ public class ItemIntegrationTest {
 
     @Test
     public void getByOwner() {
-        List<Item> items = repository.getByOwnerId(1L, Pageable.unpaged());
+        List<Item> items = repository.getAllByOwnerId(1L, Pageable.unpaged());
         assertThat(items).hasSize(2);
         assertThat(items.get(0).getId()).isEqualTo(1L);
         assertThat(items.get(0).getName()).isEqualTo("item");
@@ -109,7 +109,7 @@ public class ItemIntegrationTest {
 
     @Test
     public void searchByText() {
-        List<Item> items = repository.searchByText("ne", Pageable.unpaged());
+        List<Item> items = repository.getAllByText("ne", Pageable.unpaged());
         assertThat(items).hasSize(1);
         assertThat(items.get(0).getId()).isEqualTo(2L);
         assertThat(items.get(0).getName()).isEqualTo("new item");

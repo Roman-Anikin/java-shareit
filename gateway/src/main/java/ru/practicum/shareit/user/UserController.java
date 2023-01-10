@@ -1,6 +1,6 @@
 package ru.practicum.shareit.user;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -10,9 +10,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping(path = "/users")
+@AllArgsConstructor
 public class UserController {
 
-    @Autowired
     private UserClient client;
 
     @PostMapping

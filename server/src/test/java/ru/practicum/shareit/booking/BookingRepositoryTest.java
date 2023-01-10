@@ -18,6 +18,7 @@ import ru.practicum.shareit.util.OffsetPageRequest;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -198,10 +199,10 @@ public class BookingRepositoryTest {
         } catch (InterruptedException ie) {
             Thread.currentThread().interrupt();
         }
-        Booking booking = repository.findByItemIdAndBookerIdAndEndBefore(1L, 2L,
+        Optional<Booking> booking = repository.findByItemIdAndBookerIdAndEndBefore(1L, 2L,
                 LocalDateTime.now());
-        assertThat(booking.getId()).isEqualTo(1L);
-        assertThat(booking.getItem().getId()).isEqualTo(1L);
+        assertThat(booking.get().getId()).isEqualTo(1L);
+        assertThat(booking.get().getItem().getId()).isEqualTo(1L);
     }
 
     @Test

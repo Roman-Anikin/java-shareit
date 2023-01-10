@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
@@ -35,10 +36,9 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "WHERE b.item_id = ?1 AND b.booker_id = ?2 AND b.end_date < ?3 " +
             "AND (b.status LIKE 'APPROVED' OR b.status LIKE 'WAITING') " +
             "LIMIT 1", nativeQuery = true)
-    Booking findByItemIdAndBookerIdAndEndBefore(Long itemId, Long userId, LocalDateTime time);
+    Optional<Booking> findByItemIdAndBookerIdAndEndBefore(Long itemId, Long userId, LocalDateTime time);
 
-    @Query(name = request + " AND (b.status LIKE 'WAITING' OR b.status LIKE 'APPROVED') ",
-            nativeQuery = true)
+    @Query(name = request + " AND (b.status LIKE 'WAITING' OR b.status LIKE 'APPROVED') ", nativeQuery = true)
     List<Booking> findByItemOwnerId(Long ownerId, Pageable pageable);
 
     List<Booking> findByItemOwnerIdAndStartBeforeAndEndAfter(Long ownerId,
@@ -47,13 +47,11 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
                                                              Pageable pageable);
 
     @Query(name = request + "AND (b.status LIKE 'WAITING' OR b.status LIKE 'APPROVED') " +
-            "AND b.end_date < ?2 ",
-            nativeQuery = true)
+            "AND b.end_date < ?2 ", nativeQuery = true)
     List<Booking> findByItemOwnerIdAndEndBefore(Long ownerId, LocalDateTime time, Pageable pageable);
 
     @Query(name = request + "AND (b.status LIKE 'WAITING' OR b.status LIKE 'APPROVED') " +
-            "AND b.start_date > ?2 ",
-            nativeQuery = true)
+            "AND b.start_date > ?2 ", nativeQuery = true)
     List<Booking> findByItemOwnerIdAndStartAfter(Long ownerId, LocalDateTime time, Pageable pageable);
 
     List<Booking> findByItemOwnerIdAndStatus(Long ownerId, BookingStatus status, Pageable pageable);

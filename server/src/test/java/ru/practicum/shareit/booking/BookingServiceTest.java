@@ -52,7 +52,7 @@ public class BookingServiceTest {
         Item item = new Item(1L, "item", "desc", true, new User(), null);
         item.getOwner().setId(1L);
         User booker = new User(2L, "user", "desc");
-        BookingDto bookingDto = new BookingDto(1L, getLTD(2), getLTD(3),
+        BookingDto bookingDto = new BookingDto(1L, getDateTime(2), getDateTime(3),
                 item, item.getId(), booker, booker.getId(), BookingStatus.WAITING);
         Booking booking = new Booking(1L, bookingDto.getStart(), bookingDto.getEnd(),
                 null, null, BookingStatus.WAITING);
@@ -69,7 +69,7 @@ public class BookingServiceTest {
 
     @Test
     public void addBookingWithEndBeforeStart() {
-        BookingDto bookingDto = new BookingDto(1L, getLTD(5), getLTD(3),
+        BookingDto bookingDto = new BookingDto(1L, getDateTime(5), getDateTime(3),
                 null, 1L, null, null, null);
         Booking booking = new Booking(1L, bookingDto.getStart(), bookingDto.getEnd(),
                 null, null, BookingStatus.WAITING);
@@ -82,7 +82,7 @@ public class BookingServiceTest {
 
     @Test
     public void addBookingWithoutItemExist() {
-        BookingDto bookingDto = new BookingDto(1L, getLTD(2), getLTD(3),
+        BookingDto bookingDto = new BookingDto(1L, getDateTime(2), getDateTime(3),
                 null, 1L, null, null, null);
         Booking booking = new Booking(1L, bookingDto.getStart(), bookingDto.getEnd(),
                 null, null, BookingStatus.WAITING);
@@ -96,7 +96,7 @@ public class BookingServiceTest {
 
     @Test
     public void addBookingWhenUserIsOwner() {
-        BookingDto bookingDto = new BookingDto(1L, getLTD(2), getLTD(3),
+        BookingDto bookingDto = new BookingDto(1L, getDateTime(2), getDateTime(3),
                 null, 1L, null, null, null);
         Booking booking = new Booking(1L, bookingDto.getStart(), bookingDto.getEnd(),
                 new Item(), null, BookingStatus.WAITING);
@@ -112,7 +112,7 @@ public class BookingServiceTest {
 
     @Test
     public void addBookingWithUnavailableItem() {
-        BookingDto bookingDto = new BookingDto(1L, getLTD(2), getLTD(3),
+        BookingDto bookingDto = new BookingDto(1L, getDateTime(2), getDateTime(3),
                 null, 1L, null, null, null);
         Booking booking = new Booking(1L, bookingDto.getStart(), bookingDto.getEnd(),
                 new Item(), null, BookingStatus.WAITING);
@@ -131,12 +131,11 @@ public class BookingServiceTest {
         Item item = new Item(1L, "item", "desc", true, new User(), null);
         item.getOwner().setId(1L);
         User booker = new User(2L, "user", "desc");
-        Booking booking = new Booking(1L, getLTD(2), getLTD(3),
+        Booking booking = new Booking(1L, getDateTime(2), getDateTime(3),
                 item, booker, BookingStatus.WAITING);
-        BookingDto bookingDto = new BookingDto(1L, getLTD(2), getLTD(3),
+        BookingDto bookingDto = new BookingDto(1L, getDateTime(2), getDateTime(3),
                 item, item.getId(), booker, booker.getId(), BookingStatus.APPROVED);
         when(repository.findById(any())).thenReturn(Optional.of(booking));
-        when(repository.save(any())).thenReturn(booking);
         when(bookingMapper.convertToDto(booking)).thenReturn(bookingDto);
 
         BookingDto savedBooking = bookingService.makeApprove(1L, 1L, true);
@@ -148,12 +147,11 @@ public class BookingServiceTest {
         Item item = new Item(1L, "item", "desc", true, new User(), null);
         item.getOwner().setId(1L);
         User booker = new User(2L, "user", "desc");
-        Booking booking = new Booking(1L, getLTD(2), getLTD(3),
+        Booking booking = new Booking(1L, getDateTime(2), getDateTime(3),
                 item, booker, BookingStatus.WAITING);
-        BookingDto bookingDto = new BookingDto(1L, getLTD(2), getLTD(3),
+        BookingDto bookingDto = new BookingDto(1L, getDateTime(2), getDateTime(3),
                 item, item.getId(), booker, booker.getId(), BookingStatus.REJECTED);
         when(repository.findById(any())).thenReturn(Optional.of(booking));
-        when(repository.save(any())).thenReturn(booking);
         when(bookingMapper.convertToDto(booking)).thenReturn(bookingDto);
 
         BookingDto savedBooking = bookingService.makeApprove(1L, 1L, false);
@@ -173,7 +171,7 @@ public class BookingServiceTest {
     public void makeApproveByWrongOwner() {
         Item item = new Item(1L, "item", "desc", true, new User(), null);
         item.getOwner().setId(1L);
-        Booking booking = new Booking(1L, getLTD(2), getLTD(3),
+        Booking booking = new Booking(1L, getDateTime(2), getDateTime(3),
                 item, new User(), BookingStatus.WAITING);
         when(repository.findById(any())).thenReturn(Optional.of(booking));
 
@@ -186,7 +184,7 @@ public class BookingServiceTest {
     public void makeApproveForWrongStatus() {
         Item item = new Item(1L, "item", "desc", true, new User(), null);
         item.getOwner().setId(1L);
-        Booking booking = new Booking(1L, getLTD(2), getLTD(3),
+        Booking booking = new Booking(1L, getDateTime(2), getDateTime(3),
                 item, new User(), BookingStatus.APPROVED);
         when(repository.findById(any())).thenReturn(Optional.of(booking));
 
@@ -200,9 +198,9 @@ public class BookingServiceTest {
         Item item = new Item(1L, "item", "desc", true, new User(), null);
         item.getOwner().setId(2L);
         User booker = new User(3L, "user", "desc");
-        Booking booking = new Booking(4L, getLTD(2), getLTD(3),
+        Booking booking = new Booking(4L, getDateTime(2), getDateTime(3),
                 item, booker, BookingStatus.WAITING);
-        BookingDto bookingDto = new BookingDto(4L, getLTD(2), getLTD(3),
+        BookingDto bookingDto = new BookingDto(4L, getDateTime(2), getDateTime(3),
                 item, item.getId(), booker, booker.getId(), BookingStatus.WAITING);
         when(repository.findById(any())).thenReturn(Optional.of(booking));
         when(bookingMapper.convertToDto(booking)).thenReturn(bookingDto);
@@ -216,9 +214,9 @@ public class BookingServiceTest {
         Item item = new Item(1L, "item", "desc", true, new User(), null);
         item.getOwner().setId(2L);
         User booker = new User(3L, "user", "desc");
-        Booking booking = new Booking(4L, getLTD(2), getLTD(3),
+        Booking booking = new Booking(4L, getDateTime(2), getDateTime(3),
                 item, booker, BookingStatus.WAITING);
-        BookingDto bookingDto = new BookingDto(4L, getLTD(2), getLTD(3),
+        BookingDto bookingDto = new BookingDto(4L, getDateTime(2), getDateTime(3),
                 item, item.getId(), booker, booker.getId(), BookingStatus.WAITING);
         when(repository.findById(any())).thenReturn(Optional.of(booking));
         when(bookingMapper.convertToDto(booking)).thenReturn(bookingDto);
@@ -232,7 +230,7 @@ public class BookingServiceTest {
         Item item = new Item(1L, "item", "desc", true, new User(), null);
         item.getOwner().setId(2L);
         User booker = new User(3L, "user", "desc");
-        Booking booking = new Booking(4L, getLTD(2), getLTD(3),
+        Booking booking = new Booking(4L, getDateTime(2), getDateTime(3),
                 item, booker, BookingStatus.WAITING);
         when(repository.findById(any())).thenReturn(Optional.of(booking));
 
@@ -243,7 +241,7 @@ public class BookingServiceTest {
 
     @Test
     public void getByUserAndStateAll() {
-        BookingDto bookingDto = new BookingDto(1L, getLTD(2), getLTD(3),
+        BookingDto bookingDto = new BookingDto(1L, getDateTime(2), getDateTime(3),
                 new Item(), 1L, new User(), 1L, BookingStatus.WAITING);
         when(userService.getById(any())).thenReturn(new UserDto());
         when(repository.findByBookerId(any(), any())).thenReturn(List.of());
@@ -256,7 +254,7 @@ public class BookingServiceTest {
 
     @Test
     public void getByUserAndStateCurrent() {
-        BookingDto bookingDto = new BookingDto(1L, getLTD(2), getLTD(3),
+        BookingDto bookingDto = new BookingDto(1L, getDateTime(2), getDateTime(3),
                 new Item(), 1L, new User(), 1L, BookingStatus.WAITING);
         when(userService.getById(any())).thenReturn(new UserDto());
         when(repository.findByBookerIdAndStartBeforeAndEndAfter(any(), any(), any(), any())).thenReturn(List.of());
@@ -269,7 +267,7 @@ public class BookingServiceTest {
 
     @Test
     public void getByUserAndStatePast() {
-        BookingDto bookingDto = new BookingDto(1L, getLTD(2), getLTD(3),
+        BookingDto bookingDto = new BookingDto(1L, getDateTime(2), getDateTime(3),
                 new Item(), 1L, new User(), 1L, BookingStatus.WAITING);
         when(userService.getById(any())).thenReturn(new UserDto());
         when(repository.findByBookerIdAndEndBefore(any(), any(), any())).thenReturn(List.of());
@@ -282,7 +280,7 @@ public class BookingServiceTest {
 
     @Test
     public void getByUserAndStateFuture() {
-        BookingDto bookingDto = new BookingDto(1L, getLTD(2), getLTD(3),
+        BookingDto bookingDto = new BookingDto(1L, getDateTime(2), getDateTime(3),
                 new Item(), 1L, new User(), 1L, BookingStatus.WAITING);
         when(userService.getById(any())).thenReturn(new UserDto());
         when(repository.findByBookerIdAndStartAfter(any(), any(), any())).thenReturn(List.of());
@@ -295,7 +293,7 @@ public class BookingServiceTest {
 
     @Test
     public void getByUserAndStateWaiting() {
-        BookingDto bookingDto = new BookingDto(1L, getLTD(2), getLTD(3),
+        BookingDto bookingDto = new BookingDto(1L, getDateTime(2), getDateTime(3),
                 new Item(), 1L, new User(), 1L, BookingStatus.WAITING);
         when(userService.getById(any())).thenReturn(new UserDto());
         when(repository.findByBookerIdAndStatus(any(), any(), any())).thenReturn(List.of());
@@ -308,7 +306,7 @@ public class BookingServiceTest {
 
     @Test
     public void getByUserAndStateRejected() {
-        BookingDto bookingDto = new BookingDto(1L, getLTD(2), getLTD(3),
+        BookingDto bookingDto = new BookingDto(1L, getDateTime(2), getDateTime(3),
                 new Item(), 1L, new User(), 1L, BookingStatus.WAITING);
         when(userService.getById(any())).thenReturn(new UserDto());
         when(repository.findByBookerIdAndStatus(any(), any(), any())).thenReturn(List.of());
@@ -321,7 +319,7 @@ public class BookingServiceTest {
 
     @Test
     public void getByWrongUserAndStateAll() {
-        when(userService.getById(any())).thenReturn(null);
+        when(userService.getById(any())).thenThrow(ObjectNotFoundException.class);
 
         assertThatThrownBy(() ->
                 bookingService.getByUserAndState(1L, "ALL", 0, 1))
@@ -339,7 +337,7 @@ public class BookingServiceTest {
 
     @Test
     public void getByOwnerAndStateAll() {
-        BookingDto bookingDto = new BookingDto(1L, getLTD(2), getLTD(3),
+        BookingDto bookingDto = new BookingDto(1L, getDateTime(2), getDateTime(3),
                 new Item(), 1L, new User(), 1L, BookingStatus.WAITING);
         when(userService.getById(any())).thenReturn(new UserDto());
         when(itemService.getByOwner(any(), any(), any())).thenReturn(List.of(new OwnerItemDto()));
@@ -353,7 +351,7 @@ public class BookingServiceTest {
 
     @Test
     public void getByOwnerAndStateCurrent() {
-        BookingDto bookingDto = new BookingDto(1L, getLTD(2), getLTD(3),
+        BookingDto bookingDto = new BookingDto(1L, getDateTime(2), getDateTime(3),
                 new Item(), 1L, new User(), 1L, BookingStatus.WAITING);
         when(userService.getById(any())).thenReturn(new UserDto());
         when(itemService.getByOwner(any(), any(), any())).thenReturn(List.of(new OwnerItemDto()));
@@ -367,7 +365,7 @@ public class BookingServiceTest {
 
     @Test
     public void getByOwnerAndStatePast() {
-        BookingDto bookingDto = new BookingDto(1L, getLTD(2), getLTD(3),
+        BookingDto bookingDto = new BookingDto(1L, getDateTime(2), getDateTime(3),
                 new Item(), 1L, new User(), 1L, BookingStatus.WAITING);
         when(userService.getById(any())).thenReturn(new UserDto());
         when(itemService.getByOwner(any(), any(), any())).thenReturn(List.of(new OwnerItemDto()));
@@ -381,7 +379,7 @@ public class BookingServiceTest {
 
     @Test
     public void getByOwnerAndStateFuture() {
-        BookingDto bookingDto = new BookingDto(1L, getLTD(2), getLTD(3),
+        BookingDto bookingDto = new BookingDto(1L, getDateTime(2), getDateTime(3),
                 new Item(), 1L, new User(), 1L, BookingStatus.WAITING);
         when(userService.getById(any())).thenReturn(new UserDto());
         when(itemService.getByOwner(any(), any(), any())).thenReturn(List.of(new OwnerItemDto()));
@@ -395,7 +393,7 @@ public class BookingServiceTest {
 
     @Test
     public void getByOwnerAndStateWaiting() {
-        BookingDto bookingDto = new BookingDto(1L, getLTD(2), getLTD(3),
+        BookingDto bookingDto = new BookingDto(1L, getDateTime(2), getDateTime(3),
                 new Item(), 1L, new User(), 1L, BookingStatus.WAITING);
         when(userService.getById(any())).thenReturn(new UserDto());
         when(itemService.getByOwner(any(), any(), any())).thenReturn(List.of(new OwnerItemDto()));
@@ -409,7 +407,7 @@ public class BookingServiceTest {
 
     @Test
     public void getByOwnerAndStateRejected() {
-        BookingDto bookingDto = new BookingDto(1L, getLTD(2), getLTD(3),
+        BookingDto bookingDto = new BookingDto(1L, getDateTime(2), getDateTime(3),
                 new Item(), 1L, new User(), 1L, BookingStatus.WAITING);
         when(userService.getById(any())).thenReturn(new UserDto());
         when(itemService.getByOwner(any(), any(), any())).thenReturn(List.of(new OwnerItemDto()));
@@ -423,7 +421,7 @@ public class BookingServiceTest {
 
     @Test
     public void getByWrongOwnerAndStateAll() {
-        when(userService.getById(any())).thenReturn(null);
+        when(userService.getById(any())).thenThrow(ObjectNotFoundException.class);
 
         assertThatThrownBy(() ->
                 bookingService.getByOwnerAndState(1L, "ALL", 0, 1))
@@ -486,7 +484,7 @@ public class BookingServiceTest {
         assertThat(foundBooking).isNull();
     }
 
-    private LocalDateTime getLTD(int sec) {
+    private LocalDateTime getDateTime(int sec) {
         return LocalDateTime.now().plusSeconds(sec).truncatedTo(ChronoUnit.SECONDS);
     }
 }

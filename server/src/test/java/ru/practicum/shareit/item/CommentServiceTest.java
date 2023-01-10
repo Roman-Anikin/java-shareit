@@ -66,7 +66,8 @@ public class CommentServiceTest {
 
     @Test
     public void addCommentWithoutUser() {
-        when(userService.getById(anyLong())).thenReturn(null);
+        when(bookingService.getByItemId(any(), any(), any())).thenReturn(new Booking());
+        when(userService.getById(anyLong())).thenThrow(ObjectNotFoundException.class);
 
         assertThatThrownBy(() ->
                 commentService.add(1L, 1L, new CommentDto()))
@@ -75,8 +76,10 @@ public class CommentServiceTest {
 
     @Test
     public void addCommentWithoutItem() {
+        when(bookingService.getByItemId(any(), any(), any())).thenReturn(new Booking());
         when(userService.getById(anyLong())).thenReturn(new UserDto());
-        when(itemService.getItemById(anyLong())).thenReturn(null);
+        when(itemService.getItemById(anyLong())).thenThrow(ObjectNotFoundException.class);
+        when(commentMapper.convertFromDto(any())).thenReturn(new Comment());
 
         assertThatThrownBy(() ->
                 commentService.add(1L, 1L, new CommentDto()))
@@ -85,9 +88,7 @@ public class CommentServiceTest {
 
     @Test
     public void addCommentWithoutBooking() {
-        when(userService.getById(anyLong())).thenReturn(new UserDto());
-        when(itemService.getItemById(anyLong())).thenReturn(new Item());
-        when(bookingService.getByItemId(any(), any(), any())).thenReturn(null);
+        when(bookingService.getByItemId(any(), any(), any())).thenThrow(ValidationException.class);
 
         assertThatThrownBy(() ->
                 commentService.add(1L, 1L, new CommentDto()))

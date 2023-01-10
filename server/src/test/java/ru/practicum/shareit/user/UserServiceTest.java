@@ -25,7 +25,7 @@ public class UserServiceTest {
     private UserServiceImpl userService;
 
     @Mock
-    private UserMapper mapper;
+    private UserMapper userMapper;
 
     @Mock
     private UserRepository repository;
@@ -34,8 +34,8 @@ public class UserServiceTest {
     public void addUser() {
         UserDto userDto = new UserDto(1L, "user", "qwe@mail.com");
         User user = new User(1L, "user", "qwe@mail.com");
-        when(mapper.convertFromDto(userDto)).thenReturn(user);
-        when((mapper.convertToDto(user))).thenReturn(userDto);
+        when(userMapper.convertFromDto(userDto)).thenReturn(user);
+        when((userMapper.convertToDto(user))).thenReturn(userDto);
         when(repository.save(any())).thenReturn(user);
 
         UserDto savedUser = userService.add(userDto);
@@ -68,8 +68,7 @@ public class UserServiceTest {
         UserDto userDto = new UserDto(1L, "new user", "asd@mail.com");
         User user = new User(1L, "user", "qwe@mail.com");
         when(repository.findById(anyLong())).thenReturn(Optional.of(user));
-        when(repository.save(any())).thenReturn(user);
-        when((mapper.convertToDto(user))).thenReturn(userDto);
+        when((userMapper.convertToDto(user))).thenReturn(userDto);
 
         UserDto updatedUser = userService.update(userDto.getId(), userDto);
         assertThat(updatedUser).usingRecursiveComparison().isEqualTo(userDto);
@@ -80,8 +79,7 @@ public class UserServiceTest {
         UserDto userDto = new UserDto(1L, "new user", null);
         User user = new User(1L, "user", "qwe@mail.com");
         when(repository.findById(anyLong())).thenReturn(Optional.of(user));
-        when(repository.save(any())).thenReturn(user);
-        when((mapper.convertToDto(user))).thenReturn(new UserDto(1L, "new user", "qwe@mail.com"));
+        when((userMapper.convertToDto(user))).thenReturn(new UserDto(1L, "new user", "qwe@mail.com"));
 
         UserDto updatedUser = userService.update(userDto.getId(), userDto);
         assertThat(userDto.getId()).isSameAs(updatedUser.getId());
@@ -94,8 +92,7 @@ public class UserServiceTest {
         UserDto userDto = new UserDto(1L, null, "asd@mail.com");
         User user = new User(1L, "user", "qwe@mail.com");
         when(repository.findById(anyLong())).thenReturn(Optional.of(user));
-        when(repository.save(any())).thenReturn(user);
-        when((mapper.convertToDto(user))).thenReturn(new UserDto(1L, "user", "asd@mail.com"));
+        when((userMapper.convertToDto(user))).thenReturn(new UserDto(1L, "user", "asd@mail.com"));
 
         UserDto updatedUser = userService.update(userDto.getId(), userDto);
         assertThat(userDto.getId()).isSameAs(updatedUser.getId());
@@ -117,7 +114,7 @@ public class UserServiceTest {
     public void getById() {
         UserDto userDto = new UserDto(1L, "user", "qwe@mail.com");
         User user = new User(1L, "user", "qwe@mail.com");
-        when((mapper.convertToDto(user))).thenReturn(userDto);
+        when((userMapper.convertToDto(user))).thenReturn(userDto);
         when(repository.findById(anyLong())).thenReturn(Optional.of(user));
 
         UserDto foundUser = userService.getById(userDto.getId());
@@ -139,9 +136,8 @@ public class UserServiceTest {
         UserDto userDto2 = new UserDto(2L, "user2", "asd@mail.com");
         User user = new User(1L, "user", "qwe@mail.com");
         User user2 = new User(2L, "user2", "asd@mail.com");
-        when((mapper.convertToDto(user))).thenReturn(userDto);
-        when((mapper.convertToDto(user2))).thenReturn(userDto2);
         when(repository.findAll()).thenReturn(List.of(user, user2));
+        when(userMapper.convertToDto(anyList())).thenReturn(List.of(userDto, userDto2));
 
         List<UserDto> users = userService.getAll();
         assertThat(users.size()).isEqualTo(2);

@@ -67,11 +67,10 @@ public class ItemServiceTest {
 
     @Test
     public void addItemWithoutOwner() {
-        ItemDto itemDto = new ItemDto(1L, "item", "desc", true, null);
-        when(userService.getById(anyLong())).thenReturn(null);
+        when(userService.getById(anyLong())).thenThrow(ObjectNotFoundException.class);
 
         assertThatThrownBy(() ->
-                itemService.add(1L, itemDto))
+                itemService.add(1L, new ItemDto()))
                 .isInstanceOf(ObjectNotFoundException.class);
     }
 
@@ -80,11 +79,8 @@ public class ItemServiceTest {
         ItemDto itemDto = new ItemDto(1L, "new item", "new desc", false, null);
         Item item = new Item(1L, "item", "desc", true, new User(), null);
         when(userService.getById(anyLong())).thenReturn(new UserDto());
+        when(repository.getByIdAndOwnerId(any(), any())).thenReturn(Optional.of(item));
         when(itemMapper.convertToDto(item)).thenReturn(itemDto);
-        when(userMapper.convertFromDto(any())).thenReturn(new User());
-        when(repository.getByOwnerId(any(), any())).thenReturn(List.of(item));
-        when(repository.findById(anyLong())).thenReturn(Optional.of(item));
-        when(repository.save(any())).thenReturn(item);
 
         ItemDto savedItem = itemService.update(itemDto.getId(), 1L, itemDto);
         assertThat(savedItem).usingRecursiveComparison().isEqualTo(itemDto);
@@ -95,12 +91,9 @@ public class ItemServiceTest {
         ItemDto itemDto = new ItemDto(1L, "new item", null, null, null);
         Item item = new Item(1L, "item", "desc", true, new User(), null);
         when(userService.getById(anyLong())).thenReturn(new UserDto());
-        when(itemMapper.convertToDto(item)).thenReturn(new ItemDto(
-                1L, "new item", "desc", true, null));
-        when(userMapper.convertFromDto(any())).thenReturn(new User());
-        when(repository.getByOwnerId(any(), any())).thenReturn(List.of(item));
-        when(repository.findById(anyLong())).thenReturn(Optional.of(item));
-        when(repository.save(any())).thenReturn(item);
+        when(repository.getByIdAndOwnerId(any(), any())).thenReturn(Optional.of(item));
+        when(itemMapper.convertToDto(item)).thenReturn(new ItemDto(1L, "new item", "desc",
+                true, null));
 
         ItemDto savedItem = itemService.update(itemDto.getId(), 1L, itemDto);
         assertThat(savedItem.getId()).isEqualTo(itemDto.getId());
@@ -114,12 +107,9 @@ public class ItemServiceTest {
         ItemDto itemDto = new ItemDto(1L, null, "new desc", null, null);
         Item item = new Item(1L, "item", "desc", true, new User(), null);
         when(userService.getById(anyLong())).thenReturn(new UserDto());
-        when(itemMapper.convertToDto(item)).thenReturn(new ItemDto(
-                1L, "item", "new desc", true, null));
-        when(userMapper.convertFromDto(any())).thenReturn(new User());
-        when(repository.getByOwnerId(any(), any())).thenReturn(List.of(item));
-        when(repository.findById(anyLong())).thenReturn(Optional.of(item));
-        when(repository.save(any())).thenReturn(item);
+        when(repository.getByIdAndOwnerId(any(), any())).thenReturn(Optional.of(item));
+        when(itemMapper.convertToDto(item)).thenReturn(new ItemDto(1L, "item", "new desc",
+                true, null));
 
         ItemDto savedItem = itemService.update(itemDto.getId(), 1L, itemDto);
         assertThat(savedItem.getId()).isEqualTo(itemDto.getId());
@@ -133,12 +123,9 @@ public class ItemServiceTest {
         ItemDto itemDto = new ItemDto(1L, null, null, false, null);
         Item item = new Item(1L, "item", "desc", true, new User(), null);
         when(userService.getById(anyLong())).thenReturn(new UserDto());
-        when(itemMapper.convertToDto(item)).thenReturn(new ItemDto(
-                1L, "item", "desc", false, null));
-        when(userMapper.convertFromDto(any())).thenReturn(new User());
-        when(repository.getByOwnerId(any(), any())).thenReturn(List.of(item));
-        when(repository.findById(anyLong())).thenReturn(Optional.of(item));
-        when(repository.save(any())).thenReturn(item);
+        when(repository.getByIdAndOwnerId(any(), any())).thenReturn(Optional.of(item));
+        when(itemMapper.convertToDto(item)).thenReturn(new ItemDto(1L, "item", "desc",
+                false, null));
 
         ItemDto savedItem = itemService.update(itemDto.getId(), 1L, itemDto);
         assertThat(savedItem.getId()).isEqualTo(itemDto.getId());
@@ -149,12 +136,10 @@ public class ItemServiceTest {
 
     @Test
     public void updateItemByWrongOwner() {
-        ItemDto itemDto = new ItemDto(1L, "item", "desc", true, null);
         when(userService.getById(anyLong())).thenReturn(new UserDto());
-        when(repository.getByOwnerId(any(), any())).thenReturn(List.of());
 
         assertThatThrownBy(() ->
-                itemService.update(itemDto.getId(), 1L, itemDto))
+                itemService.update(1L, 1L, new ItemDto()))
                 .isInstanceOf(ObjectNotFoundException.class);
     }
 
@@ -233,7 +218,7 @@ public class ItemServiceTest {
         BookingDto nextBooking = new BookingDto(2L, null, null, item, 1L, new User(), 3L,
                 BookingStatus.WAITING);
         when(ownerItemMapper.convertToDto(List.of(item, item2))).thenReturn(List.of(itemDto, itemDto2));
-        when(repository.getByOwnerId(anyLong(), any())).thenReturn(List.of(item, item2));
+        when(repository.getAllByOwnerId(anyLong(), any())).thenReturn(List.of(item, item2));
         when(bookingService.getLastBooking(item.getId())).thenReturn(lastBooking);
         when(bookingService.getNextBooking(item.getId())).thenReturn(nextBooking);
 
@@ -253,7 +238,7 @@ public class ItemServiceTest {
     @Test
     public void geAllByWrongOwner() {
         when(ownerItemMapper.convertToDto(List.of())).thenReturn(List.of());
-        when(repository.getByOwnerId(anyLong(), any())).thenReturn(List.of());
+        when(repository.getAllByOwnerId(anyLong(), any())).thenReturn(List.of());
 
         List<OwnerItemDto> savedItems = itemService.getByOwner(1L, 0, 10);
         assertThat(savedItems).hasSize(0);
@@ -264,7 +249,7 @@ public class ItemServiceTest {
         ItemDto itemDto = new ItemDto(1L, "item", "desc", true, null);
         Item item = new Item(1L, "item", "desc", true, new User(), null);
         when(userService.getById(anyLong())).thenReturn(new UserDto());
-        when(repository.searchByText(anyString(), any())).thenReturn(List.of(item));
+        when(repository.getAllByText(anyString(), any())).thenReturn(List.of(item));
         when(itemMapper.convertToDto(anyList())).thenReturn(List.of(itemDto));
 
         List<ItemDto> items = itemService.searchByText(1L, "ItEm", 0, 10);
@@ -277,7 +262,7 @@ public class ItemServiceTest {
         ItemDto itemDto = new ItemDto(1L, "item", "desc", true, null);
         Item item = new Item(1L, "item", "desc", true, new User(), null);
         when(userService.getById(anyLong())).thenReturn(new UserDto());
-        when(repository.searchByText(anyString(), any())).thenReturn(List.of(item));
+        when(repository.getAllByText(anyString(), any())).thenReturn(List.of(item));
         when(itemMapper.convertToDto(anyList())).thenReturn(List.of(itemDto));
 
         List<ItemDto> items = itemService.searchByText(1L, "DESC   ", 0, 10);

@@ -57,7 +57,7 @@ public class ItemRequestServiceTest {
 
     @Test
     public void addRequestWithoutUserExist() {
-        when(userService.getById(anyLong())).thenReturn(null);
+        when(userService.getById(anyLong())).thenThrow(ObjectNotFoundException.class);
 
         assertThatThrownBy(() ->
                 requestService.add(1L, new ItemRequestDto()))
@@ -83,7 +83,7 @@ public class ItemRequestServiceTest {
 
     @Test
     public void getAllByRequesterWithoutUserExist() {
-        when(userService.getById(anyLong())).thenReturn(null);
+        when(userService.getById(anyLong())).thenThrow(ObjectNotFoundException.class);
 
         assertThatThrownBy(() ->
                 requestService.getAllByRequester(1L))
@@ -109,7 +109,7 @@ public class ItemRequestServiceTest {
 
     @Test
     public void getAllExceptRequesterWithoutUserExist() {
-        when(userService.getById(anyLong())).thenReturn(null);
+        when(userService.getById(anyLong())).thenThrow(ObjectNotFoundException.class);
 
         assertThatThrownBy(() ->
                 requestService.getAllExceptRequester(1L, 0, 10))

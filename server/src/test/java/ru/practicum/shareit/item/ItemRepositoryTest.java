@@ -52,7 +52,7 @@ public class ItemRepositoryTest {
 
     @Test
     public void getByOwnerId() {
-        List<Item> items = repository.getByOwnerId(2L, Pageable.unpaged());
+        List<Item> items = repository.getAllByOwnerId(2L, Pageable.unpaged());
         assertThat(items).hasSize(1);
         assertThat(items.get(0).getId()).isEqualTo(3L);
         assertThat(items.get(0).getName()).isEqualTo("third item");
@@ -62,7 +62,7 @@ public class ItemRepositoryTest {
 
     @Test
     public void getByOwnerIdWithPagination() {
-        List<Item> items = repository.getByOwnerId(1L, new OffsetPageRequest(1, 1, Sort.unsorted()));
+        List<Item> items = repository.getAllByOwnerId(1L, new OffsetPageRequest(1, 1, Sort.unsorted()));
         assertThat(items).hasSize(1);
         assertThat(items.get(0).getId()).isEqualTo(2L);
         assertThat(items.get(0).getName()).isEqualTo("second item");
@@ -71,7 +71,7 @@ public class ItemRepositoryTest {
 
     @Test
     public void searchByTextInName() {
-        List<Item> items = repository.searchByText("sec", Pageable.unpaged());
+        List<Item> items = repository.getAllByText("sec", Pageable.unpaged());
         assertThat(items).hasSize(1);
         assertThat(items.get(0).getId()).isEqualTo(2L);
         assertThat(items.get(0).getName()).isEqualTo("second item");
@@ -80,7 +80,7 @@ public class ItemRepositoryTest {
 
     @Test
     public void searchByTextInDescription() {
-        List<Item> items = repository.searchByText("ird", Pageable.unpaged());
+        List<Item> items = repository.getAllByText("ird", Pageable.unpaged());
         assertThat(items).hasSize(1);
         assertThat(items.get(0).getId()).isEqualTo(3L);
         assertThat(items.get(0).getName()).isEqualTo("third item");
@@ -89,7 +89,7 @@ public class ItemRepositoryTest {
 
     @Test
     public void searchByTextWithPagination() {
-        List<Item> items = repository.searchByText("it", new OffsetPageRequest(2, 2, Sort.unsorted()));
+        List<Item> items = repository.getAllByText("it", new OffsetPageRequest(2, 2, Sort.unsorted()));
         assertThat(items).hasSize(1);
         assertThat(items.get(0).getId()).isEqualTo(3L);
         assertThat(items.get(0).getName()).isEqualTo("third item");

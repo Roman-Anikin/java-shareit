@@ -1,6 +1,6 @@
 package ru.practicum.shareit.requests;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -14,9 +14,9 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/requests")
 @Validated
+@AllArgsConstructor
 public class ItemRequestController {
 
-    @Autowired
     private ItemRequestClient client;
 
     @PostMapping
